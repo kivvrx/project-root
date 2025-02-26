@@ -7,9 +7,6 @@ using namespace ip;
 
 int main() {
     try {
-        std::locale::global(std::locale(""));
-        std::cout.imbue(std::locale());
-        std::cin.imbue(std::locale());
         io_context io;
         tcp::acceptor acceptor(io, tcp::endpoint(tcp::v4(), 1234));
 
