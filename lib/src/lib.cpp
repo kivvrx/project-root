@@ -1,4 +1,3 @@
-// lib/src/libfunctions.cpp
 #include "lib.h"
 #include <algorithm>
 #include <cctype>
@@ -28,5 +27,5 @@ int calculateSum(const std::string& str) {
 }
 
 std::string checkString(const std::string& str) {
-    return (str.size() > 2 && (str.size() % 32) == 0) ? "истина" : "ложь";
+    return (str.size() > 2 && (str.size() % 32) == 0) ? "true" : "false";
 }
