@@ -5,7 +5,6 @@
 using namespace boost::asio;
 using namespace ip;
 
-
 int main() {
     try {
         std::locale::global(std::locale(""));
@@ -22,25 +21,24 @@ int main() {
                 streambuf buf;
                 read_until(socket, buf, '\n');
                 std::string data = buffer_cast<const char*>(buf.data());
-                data.resize(buf.size() - 1); // Убираем '\n'
+                data.resize(buf.size() - 1); 
 
-                // Передаем полученные данные в функцию checkString
+               
                 std::string result = checkString(data);
-                if (result == "истина") {
-                    std::cout << "Успех: Полученные данные - " << data << std::endl;
+                if (result == "true") {
+                    std::cout << "Success: Received data - " << data << std::endl;
                 }
                 else {
-                    std::cout << "Ошибка: Некорректные данные - " << data << std::endl;
+                    std::cout << "Error: Invalid data - " << data << std::endl;
                 }
             }
             catch (...) {
-                std::cerr << "Ошибка обработки данных" << std::endl;
+                std::cerr << "Data processing error" << std::endl;
             }
         }
     }
     catch (std::exception& e) {
-        std::cerr << "Ошибка сервера: " << e.what() << std::endl;
+        std::cerr << "Server error: " << e.what() << std::endl;
     }
     return 0;
 }
-
