@@ -12,34 +12,33 @@ std::mutex buffer_mutex;
 std::condition_variable buffer_cv;
 std::string shared_buffer;
 bool data_ready = false;
-bool processing_done = true; // Флаг завершения обработки
+bool processing_done = true; 
 
 void inputThread() {
     while (true) {
         std::unique_lock<std::mutex> lock(buffer_mutex);
-        // Ждем, пока обработка предыдущих данных завершится
+
         buffer_cv.wait(lock, [] { return processing_done; });
 
         std::string input;
-        std::cout << "Введите строку: ";
+        std::cout << "Enter a string: ";
         std::getline(std::cin, input);
 
-        // Проверка ввода (оставляем в основном коде)
+
         if (input.empty() || input.length() > 64 || !std::all_of(input.begin(), input.end(), ::isdigit)) {
-            std::cerr << "Ошибка ввода!" << std::endl;
+            std::cerr << "Input error!" << std::endl;
             continue;
         }
 
-        processString(input); // Используем функцию из библиотеки
+        processString(input); 
 
         shared_buffer = input;
         data_ready = true;
-        processing_done = false; // Обработка началась
+        processing_done = false; 
         lock.unlock();
-        buffer_cv.notify_one(); // Уведомляем поток обработки
+        buffer_cv.notify_one(); 
     }
 }
-
 
 void processingThread() {
     while (true) {
@@ -51,10 +50,10 @@ void processingThread() {
         data_ready = false;
         lock.unlock();
 
-        std::cout << "Обработанные данные: " << data << std::endl;
+        std::cout << "Processed data: " << data << std::endl;
 
         int sum = calculateSum(data);
-        std::cout << "Сумма числовых значений: " << sum << std::endl; // Вывод суммы на экран
+        std::cout << "Sum of numeric values: " << sum << std::endl; 
 
         try {
             io_context io;
@@ -62,14 +61,14 @@ void processingThread() {
             tcp::resolver resolver(io);
             connect(socket, resolver.resolve("127.0.0.1", "1234"));
 
-            // Передаем сумму в виде строки в Программу №2
+
             write(socket, buffer(std::to_string(sum) + "\n"));
         }
         catch (std::exception& e) {
-            std::cerr << "Ошибка подключения: " << e.what() << std::endl;
+            std::cerr << "Connection error: " << e.what() << std::endl;
         }
 
-        // Уведомляем, что обработка завершена
+
         {
             std::lock_guard<std::mutex> lock(buffer_mutex);
             processing_done = true;
@@ -78,13 +77,7 @@ void processingThread() {
     }
 }
 
-
-
-
 int main() {
-    std::locale::global(std::locale(""));
-    std::cout.imbue(std::locale());
-    std::cin.imbue(std::locale());
     std::thread t1(inputThread);
     std::thread t2(processingThread);
     t1.join();
